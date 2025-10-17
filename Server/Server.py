@@ -1,11 +1,11 @@
-
+import random
 
 class Server:
-    def __init__(self):
-        pass
+    def __init__(self, clients):
+        self.clients = clients
 
-    def sample_clients(self):
-        pass
+    def sample_clients(self, fraction_fit, num_clients):
+        
 
     def train(self):
         pass
