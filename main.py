@@ -1,7 +1,7 @@
 from Data_Processing import Load_data, Data_partition
 from Client import Client
 from Server import Server
-from Simulation_pipeline import Start_simulation
+from Start_simulation import Start_simulation
 
 # Hyperparameters
 dataset = "MNIST"

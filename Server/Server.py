@@ -7,9 +7,10 @@ from functools import reduce
 
 
 class Server:
-    def __init__(self, clients, aggregation=None):
+    def __init__(self, clients, model, aggregation=None):
         self.clients = clients
-        self.global_model = None
+        self.global_model = model
+        
         if aggregation is None:
             self.aggregation = self.models_aggregation
 
