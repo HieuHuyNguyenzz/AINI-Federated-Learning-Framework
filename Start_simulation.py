@@ -1,5 +1,5 @@
-from Server import Server
-from Client import Client
+import Server
+import Client
 from utils import get_paramters
 
 
@@ -9,8 +9,9 @@ def Start_simulation(fl_type,
                      model, 
                      trainsets,
                      testsets,
-                     Server = None, 
-                     Clients = None, 
+                     file_name = "FL.csv",
+                     server = None, 
+                     clients = None, 
                      aggregation = None,
                      train_func = None,
                      client_test_func = None,
@@ -19,8 +20,8 @@ def Start_simulation(fl_type,
     model = model
 
     if fl_type == 'centralized':
-        if Clients is None:
-            Clients = [Clients(client_id = id,
+        if clients is None:
+            clients = [Client(client_id = id,
                                model = model,
                                trainset = trainsets[id],
                                testset = testsets[id],
@@ -28,23 +29,25 @@ def Start_simulation(fl_type,
                                client_test_func = client_test_func) 
                         for id in range(num_clients)]
         
-        if Server is None:
-            Server = Server(clients = Clients, 
+        if server is None:
+            server = Server(clients = clients, 
                             model = model,
-                            test_func = server_test_func)
+                            test_func = server_test_func,
+                            num_rounds = num_rounds,
+                            aggregation = aggregation,
+                            file_name = file_name)
 
-        parameters = get_paramters(model)
 
-        Server.train(num_rounds = num_rounds,
-                     parameters = parameters,
-                     aggregation = aggregation)
+        Server.train()
         
-        Server.evaluate()
+        if server_test_func is not None:
+            results = Server.evaluate()
+            print("Final evaluation results:", results)
 
-        # Lưu kết quả huấn luyện
-
-
-        # Lưu model (Optional)
+        if client_test_func is not None:
+            for client in clients:
+                client_results = client.local_test()
+                print(f"Client {client.client_id} evaluation results:", client_results)
 
 
     elif fl_type == 'decentralized':

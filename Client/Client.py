@@ -16,11 +16,13 @@ class Client:
         self.test_func = client_test_func
 
 
-    def local_train(self, config):
+    def local_train(self, model, config):
+        self.model = set_parameters(self.model, model)
         model, results = self.train_func(self.trainset, self.model, config)
-        return get_parameters(model), results
+        return {"client_id": self._id, "params": get_parameters(model), "training results": results}
 
 
-    def local_test(self, config):
+    def local_test(self, model, config):
+        self.model = set_parameters(self.model, model)
         results = self.test_func(self.testset, self.model, config)
-        return results
+        return {"client_id": self._id, "test results": results}
