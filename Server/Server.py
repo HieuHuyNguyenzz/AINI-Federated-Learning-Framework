@@ -13,7 +13,6 @@ class Server:
                  aggregation=None, 
                  test_func=None, 
                  num_rounds = 1, 
-                 file_name = "FL.csv",
                  server_testset = None,
                  Hyperparameters = None
                  ):
@@ -23,7 +22,6 @@ class Server:
         self.test_func = test_func
         self.Hyperparameters = Hyperparameters
         self.num_rounds = num_rounds
-        self.file_name = file_name
         if aggregation is None:
             self.aggregation = self.models_aggregation
 
@@ -35,14 +33,12 @@ class Server:
         return sampled_clients_id
     
 
-    def train(self, num_rounds, fraction_fit):
-        for round in range(num_rounds):
-            sampled_clients_id = self.sample_clients(fraction_fit, len(self.clients))
+    def train(self, rounds, fraction_fit):
+        sampled_clients_id = self.sample_clients(fraction_fit, len(self.clients))
             
-            training_config = {"round": round} + self.Hyperparameters
-            results = [self.clients[client_id].local_train(self.global_model, training_config) for client_id in sampled_clients_id]
-
-            self.global_model = self.aggregation(results)
+        training_config = {"round": rounds} + self.Hyperparameters
+        results = [self.clients[client_id].local_train(self.global_model, training_config) for client_id in sampled_clients_id]
+        self.global_model = self.aggregation(results)
 
     
     def models_aggregation(results: list[tuple[NDArrays, float]]) -> NDArrays:
@@ -75,9 +71,9 @@ class Server:
         return results
 
 
-    def evaluate_aggregation(self):
-        pass
+    def evaluate_aggregation(self, results) -> NDArrays:
+        aggregated_results = {}
+        for metric, value in results:
+            aggregated_results[metric] = aggregated_results.get(metric, 0) + value/len(results)
 
-
-    def save_results(self):
-        pass
+        return aggregated_results            

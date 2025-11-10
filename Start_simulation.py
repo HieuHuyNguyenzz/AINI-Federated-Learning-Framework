@@ -34,12 +34,13 @@ def Start_simulation(fl_type,
                             model = model,
                             test_func = server_test_func,
                             num_rounds = num_rounds,
-                            aggregation = aggregation,
-                            file_name = file_name)
+                            aggregation = aggregation)
 
+        for round in range(num_rounds):
+            results = Server.train()
+            results = Server.evaluate()
+            client_results = client.local_test()
 
-        Server.train()
-        
         if server_test_func is not None:
             results = Server.evaluate()
             print("Final evaluation results:", results)
